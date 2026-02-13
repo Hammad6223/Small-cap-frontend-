@@ -8,7 +8,6 @@ const SidebarMenuItems = ({ setMainMenu, sidebartoogle, setNavActive, activeClas
   const layout1 = localStorage.getItem("sidebar_layout") || layout;
 
   const id = window.location.pathname.split("/").pop();
-  const layoutId = id;
   const CurrentPath = window.location.pathname;
 
   const toggletNavActive = (item) => {

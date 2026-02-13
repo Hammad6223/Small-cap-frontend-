@@ -37,7 +37,7 @@ export const forgotPassword = createAsyncThunk(FORGOTPASSWORD, async (data) => {
 export const resetPassword = createAsyncThunk(RESETPASSWORD, async (data) => {
   try {
     
-    if(data.password.password!=data.password.confirm_password){
+    if(data.password.password!==data.password.confirm_password){
       toast.error("New Password and Confirm must be same")
       throw new Error("New Password and Confirm must be same");
     }
@@ -52,8 +52,8 @@ export const resetPassword = createAsyncThunk(RESETPASSWORD, async (data) => {
 });
 export const changePassword = createAsyncThunk(CHANGEPASSWORD, async (data) => {
   try {
-    if(data.new_password!=data.confirm_password){
-      throw "New Password and Confirm must be same";
+    if(data.new_password!==data.confirm_password){
+      throw new Error("New Password and Confirm must be same");
     }
     const response = await UPDATE(`user/change_password`,data);
     toast.success("Passsword Updated Sucessfully...");
