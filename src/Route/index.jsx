@@ -17,6 +17,7 @@ import PrivacyPolicy from '../Components/PrivacyPolicy';
 import Disclaimer from '../Components/disclaimer';
 import TodaysPick from '../Components/TodaysPick';
 import TodaysPickDetail from '../Components/TodaysPick/DetailPage';
+import Notifications from '../Components/Notifications';
 
 import EditProfile from '../Components/UsersProfile/EditProfile/index.jsx';
 import ChangePassword from '../Components/changePassword/index.jsx'
@@ -40,6 +41,7 @@ const Routers = () => {
               <Route  path={'/dashboard'} element={<Dashboard />} />
               <Route  path={'/todays_pick'} element={<TodaysPick />} />
               <Route  path={'/todays_pick/detail/:symbol'} element={<TodaysPickDetail />} />
+              <Route  path={'/notifications'} element={<Notifications />} />
               <Route  path={'/terms_of_use'} element={<TermOfUse />} />
               <Route  path={'/how_to_trade'} element={<Trade />} />
               <Route  path={'/privacy_policy'} element={<PrivacyPolicy/>} />
