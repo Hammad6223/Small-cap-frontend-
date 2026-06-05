@@ -20,9 +20,10 @@ const excerpt = (html, n = 110) => {
 const formatDate = (d) => (d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '');
 
 const styles = `
-  .news-card{transition:transform .15s ease, box-shadow .15s ease;border:1px solid #eef0f3;border-radius:12px;overflow:hidden;height:100%;}
+  .news-card{transition:transform .15s ease, box-shadow .15s ease;border:1px solid #eef0f3;border-radius:12px;overflow:hidden;height:100%;display:flex;flex-direction:column;}
   .news-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(17,24,39,.10);}
-  .news-cover{position:relative;height:0;padding-top:58%;background:#f3f4f6;overflow:hidden;}
+  .news-cover{position:relative;height:0;padding-top:58%;background:#f3f4f6;overflow:hidden;flex-shrink:0;}
+  .news-title{min-height:42px;}
   .news-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
   .news-cover .news-cover-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#c4c9d2;}
   .news-date-pill{position:absolute;top:10px;left:10px;display:inline-flex;align-items:center;gap:6px;
@@ -147,8 +148,8 @@ const News = () => {
                               <span className="news-date-pill"><FaRegCalendarAlt size={11} /> {formatDate(row.date)}</span>
                             )}
                           </div>
-                          <div className="p-3 d-flex flex-column" style={{ minHeight: 150 }}>
-                            <h6 className="news-clamp-2 mb-2" style={{ fontWeight: 600 }}>{row.title}</h6>
+                          <div className="p-3 d-flex flex-column" style={{ flex: '1 1 auto' }}>
+                            <h6 className="news-clamp-2 news-title mb-2" style={{ fontWeight: 600 }}>{row.title}</h6>
                             <p className="text-muted mb-3" style={{ fontSize: 13, flexGrow: 1 }}>{excerpt(row.content)}</p>
                             <div className="d-flex justify-content-end align-items-center" style={{ gap: 16, borderTop: '1px solid #f1f2f4', paddingTop: 12 }}>
                               <FaEye className="news-action" title="View" style={{ fontSize: 17, color: '#2a9d8f' }} onClick={() => openView(row)} />
