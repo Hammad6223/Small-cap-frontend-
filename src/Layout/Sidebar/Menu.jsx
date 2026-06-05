@@ -4,7 +4,6 @@ export const MENUITEMS = [
     menucontent: "Dashboards,Widgets",
     Items: [
 
-         { path: '/dashboard', icon: "icofont-home", id:'dashboard',title: "Dashboard", type: "link" },
          { path: '/todays_pick', icon: "icofont-chart-histogram",id:'todays_pick', title: "Today's Pick", type: "link" },
          { path: '/notifications', icon: "icofont-bell-alt",id:'notifications', title: "Notifications", type: "link" },
          { path: '/news', icon: "icofont-newspaper",id:'news', title: "News", type: "link" },

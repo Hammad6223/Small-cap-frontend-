@@ -7,7 +7,7 @@ const SidebarIcon = () => {
   const { layoutURL } = useContext(CustomizerContext);
   return (
     <div className="logo-icon-wrapper">
-      <Link to={`${process.env.PUBLIC_URL}/dashboard/default/${layoutURL}`}>
+      <Link to={`${process.env.PUBLIC_URL}/todays_pick`}>
         <img
           className="img-fluid"
           src={cubaimg}

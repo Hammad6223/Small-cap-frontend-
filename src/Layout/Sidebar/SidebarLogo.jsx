@@ -17,7 +17,7 @@ const SidebarLogo = () => {
   return (
     <div className='logo-wrapper'>
      
-      <Link to={`${process.env.PUBLIC_URL}/dashboard`}>
+      <Link to={`${process.env.PUBLIC_URL}/todays_pick`}>
         <Image  attrImage={{ className: 'img-fluid d-inline', src: `${require('../../assets/Logo/logo.png')}`, style:{width:"90%"}}} />
       </Link>
       

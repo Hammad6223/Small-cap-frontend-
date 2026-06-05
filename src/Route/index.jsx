@@ -9,7 +9,6 @@ import ForgotPassword from "../Auth/forgotPassword";
 
 import AppLayout from '../Layout/Layout';
 import UsersProfileContain from '../Components/UsersProfile';
-import Dashboard from '../Components/Dashboard';
 // import Password from '../Components/Password';
 import TermOfUse from '../Components/TermsOfUse/Add';
 import Trade from '../Components/Trade';
@@ -39,7 +38,6 @@ const Routers = () => {
           <Route  path={'/reset_password/:token'} element={<ResetPassword />} />
           <Fragment >
             <Route element={<AppLayout />} >
-              <Route  path={'/dashboard'} element={<Dashboard />} />
               <Route  path={'/todays_pick'} element={<TodaysPick />} />
               <Route  path={'/todays_pick/detail/:symbol'} element={<TodaysPickDetail />} />
               <Route  path={'/notifications'} element={<Notifications />} />

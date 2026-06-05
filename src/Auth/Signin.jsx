@@ -29,7 +29,7 @@ const Signin = ({ selected }) => {
     e.preventDefault();
     let res=await dispatch(login({email,password}));
     if(res.payload && res.payload.token)
-      history('dashboard')
+      history('todays_pick')
   };
 
   return (
