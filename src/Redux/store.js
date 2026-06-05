@@ -6,6 +6,7 @@ import termSlice from './Slices/termSlice';
 import authSlice from './Slices/authSlice';
 import todayspick from './Slices/todayspick';
 import notificationSlice from './Slices/notificationSlice';
+import newsSlice from './Slices/newsSlice';
 
 
 const store= configureStore({
@@ -16,7 +17,8 @@ const store= configureStore({
         policy:policySlice,
         term:termSlice,
         todaysPick:todayspick,
-        notification:notificationSlice
+        notification:notificationSlice,
+        news:newsSlice
     }
 })
 
