@@ -17,15 +17,19 @@ const DataTableComponent = () => {
     const navigate=useNavigate();
 
     const handleCheckboxChange = (value) => {
-        // Check if the value is already in the array
-        const isSelected = fav.includes(value);
-        if (isSelected) {
-          // If the value is already selected, remove it
-          setFav(fav.filter((selectedValue) => selectedValue !== value));
-        } else {
-          // If the value is not selected, add it
-          setFav([...fav, value]);
-        }
+        // Functional update so rapid toggles in the same render batch don't
+        // drop a change (avoids stale-closure bugs on fav).
+        setFav((prev) =>
+          prev.includes(value)
+            ? prev.filter((selectedValue) => selectedValue !== value)
+            : [...prev, value]
+        );
+      };
+
+    const handleSave = () => {
+        if (loading) return;
+        if (!window.confirm("This will replace the current Today's Pick with the selected stocks. Continue?")) return;
+        dispatch(addTodaysStocks({ symbols: fav }));
       };
 
 
@@ -54,10 +58,9 @@ const DataTableComponent = () => {
     useEffect(()=>{
         dispatch(fetchAllStocks());
         dispatch(fetchTodaysStocks());
-        setFav(todaysPickUtils(todaysStock));
-        console.log(todaysPickUtils(todaysStock));
     },[])
-    
+
+    // Seed selected favourites from the saved picks once they load.
     useEffect(()=>{setFav(todaysPickUtils(todaysStock))},[todaysStock])
 
     return (
@@ -79,7 +82,7 @@ const DataTableComponent = () => {
                     center={true}
                     pagination
                     />
-                <center><button className='btn btn-primary mx-1' onClick={()=>dispatch(addTodaysStocks({symbols:fav}))}>Save to Today's Pick</button></center>
+                <center><button className='btn btn-primary mx-1' onClick={handleSave} disabled={loading}>{loading ? 'Saving..' : "Save to Today's Pick"}</button></center>
                 </>
             )} 
         </Fragment>

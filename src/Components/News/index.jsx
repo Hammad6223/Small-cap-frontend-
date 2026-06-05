@@ -7,9 +7,13 @@ import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
 import { Breadcrumbs } from '../../AbstractElements';
 import HeaderCard from '../Common/Component/HeaderCard';
+import TextEditor from '../../CommonElements/TextEditor';
 import { fetchNews, addNews, updateNews, deleteNews } from '../../Redux/Slices/newsSlice';
 
 const emptyForm = { title: '', content: '', date: '', image: null };
+
+// Quill leaves "<p><br></p>" when empty, so check the actual text.
+const stripHtml = (html) => (html || '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
 
 const News = () => {
   const dispatch = useDispatch();
@@ -50,7 +54,7 @@ const News = () => {
   };
 
   const handleSubmit = () => {
-    if (!form.title.trim() || !form.content.trim()) return;
+    if (!form.title.trim() || !stripHtml(form.content)) return;
     const action = editId
       ? updateNews({ id: editId, data: form })
       : addNews(form);
@@ -143,12 +147,9 @@ const News = () => {
             </FormGroup>
             <FormGroup>
               <Label>Content</Label>
-              <Input
-                type="textarea"
-                rows="5"
-                placeholder="News content"
+              <TextEditor
                 value={form.content}
-                onChange={(e) => setForm({ ...form, content: e.target.value })}
+                onChange={(val) => setForm({ ...form, content: val })}
               />
             </FormGroup>
             <FormGroup>
@@ -165,7 +166,7 @@ const News = () => {
           <button
             className="btn btn-primary"
             onClick={handleSubmit}
-            disabled={submitting || !form.title.trim() || !form.content.trim()}
+            disabled={submitting || !form.title.trim() || !stripHtml(form.content)}
           >
             {submitting ? 'Saving..' : editId ? 'Update' : 'Save'}
           </button>
