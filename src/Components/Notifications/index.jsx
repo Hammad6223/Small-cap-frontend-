@@ -13,6 +13,7 @@ const PAGE_OPTIONS = [
   { label: 'Home', value: 'Home' },
   { label: "Live Stocks (Today's Pick)", value: 'Picks' },
   { label: 'Top Gainers / Losers', value: 'Movers' },
+  { label: 'Watchlist', value: 'Watchlist' },
 ];
 
 const tableColumns = [
