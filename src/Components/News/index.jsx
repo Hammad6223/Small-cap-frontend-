@@ -6,10 +6,20 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { Breadcrumbs } from '../../AbstractElements';
 import TextEditor from '../../CommonElements/TextEditor';
-import { FaEye, FaEdit, FaTrash, FaPlus, FaRegNewspaper, FaRegCalendarAlt } from 'react-icons/fa';
+import { FaEye, FaEdit, FaTrash, FaPlus, FaRegNewspaper, FaRegCalendarAlt, FaRegFileAlt, FaVideo, FaPlay } from 'react-icons/fa';
 import { fetchNews, addNews, updateNews, deleteNews } from '../../Redux/Slices/newsSlice';
 
-const emptyForm = { title: '', content: '', date: '', image: null };
+const emptyForm = { title: '', type: 'article', content: '', videoUrl: '', date: '', image: null };
+
+// Turn a YouTube/Vimeo/direct URL into something we can embed in the view modal.
+const toEmbed = (url) => {
+  if (!url) return null;
+  const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|live\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
+  if (yt) return { kind: 'iframe', src: `https://www.youtube.com/embed/${yt[1]}` };
+  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeo) return { kind: 'iframe', src: `https://player.vimeo.com/video/${vimeo[1]}` };
+  return { kind: 'video', src: url };
+};
 
 // Quill leaves "<p><br></p>" when empty, so work off the plain text.
 const stripHtml = (html) => (html || '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
@@ -25,9 +35,14 @@ const styles = `
   .news-cover{position:relative;height:0;padding-top:58%;background:#f3f4f6;overflow:hidden;flex-shrink:0;}
   .news-title{min-height:42px;}
   .news-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .news-cover iframe,.news-cover video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;}
   .news-cover .news-cover-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#c4c9d2;}
   .news-date-pill{position:absolute;top:10px;left:10px;display:inline-flex;align-items:center;gap:6px;
     background:rgba(17,24,39,.72);color:#fff;font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px;}
+  .news-type-pill{position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:6px;
+    background:rgba(239,68,68,.92);color:#fff;font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px;}
+  .news-video-frame{position:relative;width:100%;height:0;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000;margin-bottom:20px;}
+  .news-video-frame iframe,.news-video-frame video{position:absolute;inset:0;width:100%;height:100%;border:0;}
   .news-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
   .news-action{cursor:pointer;transition:opacity .15s ease;} .news-action:hover{opacity:.6;}
   .news-upload{border:1.5px dashed #d4d8de;border-radius:10px;padding:16px;text-align:center;background:#fafbfc;}
@@ -67,7 +82,9 @@ const News = () => {
     setEditId(row._id);
     setForm({
       title: row.title || '',
+      type: row.type || 'article',
       content: row.content || '',
+      videoUrl: row.videoUrl || '',
       date: row.date ? row.date.substring(0, 10) : '',
       image: null,
     });
@@ -83,8 +100,12 @@ const News = () => {
     if (file) setPreview(URL.createObjectURL(file));
   };
 
+  const isVideo = form.type === 'video';
+  // For articles an image is required (a new upload, or the existing one when editing — both reflected in `preview`).
+  const formValid = form.title.trim() && (isVideo ? form.videoUrl.trim() : (stripHtml(form.content) && preview));
+
   const handleSubmit = () => {
-    if (!form.title.trim() || !stripHtml(form.content)) return;
+    if (!formValid) return;
     const action = editId ? updateNews({ id: editId, data: form }) : addNews(form);
     dispatch(action).unwrap().then(() => setModalOpen(false)).catch(() => {});
   };
@@ -139,10 +160,24 @@ const News = () => {
                       <Col key={row._id} xl="3" lg="4" md="6" sm="12">
                         <div className="news-card">
                           <div className="news-cover">
-                            {row.image?.url ? (
+                            {row.type === 'video' ? (
+                              (() => {
+                                const embed = toEmbed(row.videoUrl);
+                                if (embed?.kind === 'iframe') {
+                                  return <iframe src={embed.src} title={row.title} allowFullScreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" />;
+                                }
+                                if (embed?.kind === 'video') {
+                                  return <video src={embed.src} controls />;
+                                }
+                                return <div className="news-cover-ph"><FaPlay size={34} /></div>;
+                              })()
+                            ) : row.image?.url ? (
                               <img src={row.image.url} alt={row.title} />
                             ) : (
                               <div className="news-cover-ph"><FaRegNewspaper size={40} /></div>
+                            )}
+                            {row.type === 'video' && (
+                              <span className="news-type-pill"><FaVideo size={11} /> Video</span>
                             )}
                             {row.date && (
                               <span className="news-date-pill"><FaRegCalendarAlt size={11} /> {formatDate(row.date)}</span>
@@ -150,7 +185,9 @@ const News = () => {
                           </div>
                           <div className="p-3 d-flex flex-column" style={{ flex: '1 1 auto' }}>
                             <h6 className="news-clamp-2 news-title mb-2" style={{ fontWeight: 600 }}>{row.title}</h6>
-                            <p className="text-muted mb-3" style={{ fontSize: 13, flexGrow: 1 }}>{excerpt(row.content)}</p>
+                            <p className="text-muted mb-3" style={{ fontSize: 13, flexGrow: 1 }}>
+                              {row.type === 'video' ? (row.videoUrl || 'Video') : excerpt(row.content)}
+                            </p>
                             <div className="d-flex justify-content-end align-items-center" style={{ gap: 16, borderTop: '1px solid #f1f2f4', paddingTop: 12 }}>
                               <FaEye className="news-action" title="View" style={{ fontSize: 17, color: '#2a9d8f' }} onClick={() => openView(row)} />
                               <FaEdit className="news-action" title="Edit" style={{ fontSize: 17, color: '#3b82f6' }} onClick={() => openEdit(row)} />
@@ -173,6 +210,28 @@ const News = () => {
         <ModalHeader toggle={() => setModalOpen(!modalOpen)}>{editId ? 'Edit News' : 'Add News'}</ModalHeader>
         <ModalBody>
           <Form className="form theme-form">
+            {/* Post type selector */}
+            <FormGroup>
+              <Label>Post Type</Label>
+              <div className="d-flex" style={{ gap: 10 }}>
+                <button
+                  type="button"
+                  className={`btn d-inline-flex align-items-center ${isVideo ? 'btn-outline-secondary' : 'btn-primary'}`}
+                  style={{ gap: 8 }}
+                  onClick={() => setForm({ ...form, type: 'article' })}
+                >
+                  <FaRegFileAlt /> Article
+                </button>
+                <button
+                  type="button"
+                  className={`btn d-inline-flex align-items-center ${isVideo ? 'btn-primary' : 'btn-outline-secondary'}`}
+                  style={{ gap: 8 }}
+                  onClick={() => setForm({ ...form, type: 'video' })}
+                >
+                  <FaVideo /> Video
+                </button>
+              </div>
+            </FormGroup>
             <Row>
               <Col md="7">
                 <FormGroup>
@@ -193,24 +252,40 @@ const News = () => {
                 </FormGroup>
               </Col>
             </Row>
-            <FormGroup>
-              <Label>Content</Label>
-              <TextEditor value={form.content} onChange={(val) => setForm({ ...form, content: val })} />
-            </FormGroup>
-            <FormGroup>
-              <Label>Image</Label>
-              <div className="news-upload">
-                {preview ? (
-                  <img src={preview} alt="preview" style={{ maxWidth: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 8 }} />
-                ) : (
-                  <div className="text-muted"><FaRegNewspaper size={26} className="mb-2" style={{ opacity: 0.5 }} /><div>No image selected</div></div>
-                )}
-                <div className="mt-3">
-                  <Input type="file" accept="image/*" onChange={handleImage} />
-                  <small className="text-muted">{preview ? 'Choose a file to replace the current image.' : 'Optional cover image.'}</small>
-                </div>
-              </div>
-            </FormGroup>
+
+            {isVideo ? (
+              <FormGroup>
+                <Label>Video URL</Label>
+                <Input
+                  type="url"
+                  placeholder="https://www.youtube.com/watch?v=…"
+                  value={form.videoUrl}
+                  onChange={(e) => setForm({ ...form, videoUrl: e.target.value })}
+                />
+                <small className="text-muted">Paste a YouTube, Vimeo, or direct video link.</small>
+              </FormGroup>
+            ) : (
+              <>
+                <FormGroup>
+                  <Label>Content</Label>
+                  <TextEditor value={form.content} onChange={(val) => setForm({ ...form, content: val })} />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Image <span className="text-danger">*</span></Label>
+                  <div className="news-upload">
+                    {preview ? (
+                      <img src={preview} alt="preview" style={{ maxWidth: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 8 }} />
+                    ) : (
+                      <div className="text-muted"><FaRegNewspaper size={26} className="mb-2" style={{ opacity: 0.5 }} /><div>No image selected</div></div>
+                    )}
+                    <div className="mt-3">
+                      <Input type="file" accept="image/*" onChange={handleImage} />
+                      <small className="text-muted">{preview ? 'Choose a file to replace the current image.' : 'A cover image is required for articles.'}</small>
+                    </div>
+                  </div>
+                </FormGroup>
+              </>
+            )}
           </Form>
         </ModalBody>
         <ModalFooter>
@@ -218,7 +293,7 @@ const News = () => {
           <button
             className="btn btn-primary"
             onClick={handleSubmit}
-            disabled={submitting || !form.title.trim() || !stripHtml(form.content)}
+            disabled={submitting || !formValid}
           >
             {submitting ? 'Saving..' : editId ? 'Update' : 'Save'}
           </button>
@@ -231,12 +306,28 @@ const News = () => {
         <ModalBody>
           {viewItem && (
             <article>
-              {viewItem.image?.url && (
-                <img
-                  src={viewItem.image.url}
-                  alt={viewItem.title}
-                  style={{ width: '100%', maxHeight: 320, objectFit: 'cover', borderRadius: 10, marginBottom: 20 }}
-                />
+              {viewItem.type === 'video' ? (
+                (() => {
+                  const embed = toEmbed(viewItem.videoUrl);
+                  if (!embed) return null;
+                  return (
+                    <div className="news-video-frame">
+                      {embed.kind === 'iframe' ? (
+                        <iframe src={embed.src} title={viewItem.title} allowFullScreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" />
+                      ) : (
+                        <video src={embed.src} controls />
+                      )}
+                    </div>
+                  );
+                })()
+              ) : (
+                viewItem.image?.url && (
+                  <img
+                    src={viewItem.image.url}
+                    alt={viewItem.title}
+                    style={{ width: '100%', maxHeight: 320, objectFit: 'cover', borderRadius: 10, marginBottom: 20 }}
+                  />
+                )
               )}
               <h3 style={{ marginBottom: 8 }}>{viewItem.title}</h3>
               {viewItem.date && (
@@ -244,8 +335,18 @@ const News = () => {
                   <FaRegCalendarAlt size={13} /> {formatDate(viewItem.date)}
                 </p>
               )}
-              <hr style={{ marginBottom: 18 }} />
-              <div className="news-content" dangerouslySetInnerHTML={{ __html: viewItem.content || '' }} />
+              {viewItem.type === 'video' ? (
+                viewItem.videoUrl && (
+                  <a href={viewItem.videoUrl} target="_blank" rel="noopener noreferrer" className="d-inline-flex align-items-center" style={{ gap: 6 }}>
+                    <FaPlay size={12} /> Open video link
+                  </a>
+                )
+              ) : (
+                <>
+                  <hr style={{ marginBottom: 18 }} />
+                  <div className="news-content" dangerouslySetInnerHTML={{ __html: viewItem.content || '' }} />
+                </>
+              )}
             </article>
           )}
         </ModalBody>

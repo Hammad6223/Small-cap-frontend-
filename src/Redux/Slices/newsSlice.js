@@ -9,10 +9,18 @@ const DELETE_NEWS = 'deleteNews';
 
 const buildFormData = (data) => {
   const formData = new FormData();
+  const type = data.type || 'article';
   formData.append('title', data.title);
-  formData.append('content', data.content);
+  formData.append('type', type);
+  if (type === 'video') {
+    formData.append('videoUrl', data.videoUrl || '');
+    formData.append('content', '');
+  } else {
+    formData.append('content', data.content || '');
+    formData.append('videoUrl', '');
+    if (data.image) formData.append('image', data.image);
+  }
   if (data.date) formData.append('date', data.date);
-  if (data.image) formData.append('image', data.image);
   return formData;
 };
 
