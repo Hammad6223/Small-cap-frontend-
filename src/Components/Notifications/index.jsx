@@ -12,7 +12,7 @@ const PAGE_OPTIONS = [
   { label: 'No specific page (just notify)', value: '' },
   { label: 'Home', value: 'Home' },
   { label: "Live Stocks (Today's Pick)", value: 'Picks' },
-  { label: 'Top Gainers / Losers', value: 'Movers' },
+  { label: 'Top Gainers / Losers', value: 'Stocks' },
   { label: 'Watchlist', value: 'Watchlist' },
 ];
 
