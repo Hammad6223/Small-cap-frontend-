@@ -8,6 +8,7 @@ import todayspick from './Slices/todayspick';
 import notificationSlice from './Slices/notificationSlice';
 import newsSlice from './Slices/newsSlice';
 import sectionSlice from './Slices/sectionSlice';
+import watchlistSlice from './Slices/watchlistSlice';
 
 
 const store= configureStore({
@@ -20,7 +21,8 @@ const store= configureStore({
         todaysPick:todayspick,
         notification:notificationSlice,
         news:newsSlice,
-        section:sectionSlice
+        section:sectionSlice,
+        watchlist:watchlistSlice
     }
 })
 

@@ -19,6 +19,7 @@ import TodaysPickDetail from '../Components/TodaysPick/DetailPage';
 import Notifications from '../Components/Notifications';
 import News from '../Components/News';
 import Sections from '../Components/Sections';
+import WatchList from '../Components/WatchList';
 
 import EditProfile from '../Components/UsersProfile/EditProfile/index.jsx';
 import ChangePassword from '../Components/changePassword/index.jsx'
@@ -44,6 +45,7 @@ const Routers = () => {
               <Route  path={'/notifications'} element={<Notifications />} />
               <Route  path={'/news'} element={<News />} />
               <Route  path={'/sections'} element={<Sections />} />
+              <Route  path={'/watch_list'} element={<WatchList />} />
               <Route  path={'/terms_of_use'} element={<TermOfUse />} />
               <Route  path={'/how_to_trade'} element={<Trade />} />
               <Route  path={'/privacy_policy'} element={<PrivacyPolicy/>} />
