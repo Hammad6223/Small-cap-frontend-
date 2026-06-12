@@ -8,6 +8,7 @@ export const MENUITEMS = [
          { path: '/watch_list', icon: "icofont-listine-dots",id:'watch_list', title: "Watch List", type: "link" },
          { path: '/notifications', icon: "icofont-bell-alt",id:'notifications', title: "Notifications", type: "link" },
          { path: '/news', icon: "icofont-newspaper",id:'news', title: "News", type: "link" },
+         { path: '/banner', icon: "icofont-image",id:'banner', title: "Banner", type: "link" },
          { path: '/sections', icon: "icofont-file-document",id:'sections', title: "Sections", type: "link" },
          { path: '/how_to_trade', icon: "icofont-question-square",id:'how_to_trade', title: "How To Trade", type: "link" },
          { path: '/terms_of_use', icon: "icofont-ui-note",id:'terms_of_use', title: "Terms Of Use", type: "link" },

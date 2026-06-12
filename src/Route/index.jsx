@@ -18,6 +18,7 @@ import TodaysPick from '../Components/TodaysPick';
 import TodaysPickDetail from '../Components/TodaysPick/DetailPage';
 import Notifications from '../Components/Notifications';
 import News from '../Components/News';
+import Banner from '../Components/Banner';
 import Sections from '../Components/Sections';
 import WatchList from '../Components/WatchList';
 
@@ -44,6 +45,7 @@ const Routers = () => {
               <Route  path={'/todays_pick/detail/:symbol'} element={<TodaysPickDetail />} />
               <Route  path={'/notifications'} element={<Notifications />} />
               <Route  path={'/news'} element={<News />} />
+              <Route  path={'/banner'} element={<Banner />} />
               <Route  path={'/sections'} element={<Sections />} />
               <Route  path={'/watch_list'} element={<WatchList />} />
               <Route  path={'/terms_of_use'} element={<TermOfUse />} />
