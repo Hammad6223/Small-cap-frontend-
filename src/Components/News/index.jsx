@@ -253,7 +253,7 @@ const News = () => {
               </Col>
             </Row>
 
-            {isVideo ? (
+            {isVideo && (
               <FormGroup>
                 <Label>Video URL</Label>
                 <Input
@@ -264,27 +264,29 @@ const News = () => {
                 />
                 <small className="text-muted">Paste a YouTube, Vimeo, or direct video link.</small>
               </FormGroup>
-            ) : (
-              <>
-                <FormGroup>
-                  <Label>Content</Label>
-                  <TextEditor value={form.content} onChange={(val) => setForm({ ...form, content: val })} />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Image <span className="text-danger">*</span></Label>
-                  <div className="news-upload">
-                    {preview ? (
-                      <img src={preview} alt="preview" style={{ maxWidth: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 8 }} />
-                    ) : (
-                      <div className="text-muted"><FaRegNewspaper size={26} className="mb-2" style={{ opacity: 0.5 }} /><div>No image selected</div></div>
-                    )}
-                    <div className="mt-3">
-                      <Input type="file" accept="image/*" onChange={handleImage} />
-                      <small className="text-muted">{preview ? 'Choose a file to replace the current image.' : 'A cover image is required for articles.'}</small>
-                    </div>
+            )}
+
+            <FormGroup>
+              <Label>Content {!isVideo && <span className="text-danger">*</span>}</Label>
+              <TextEditor value={form.content} onChange={(val) => setForm({ ...form, content: val })} />
+              {isVideo && <small className="text-muted">Optional description for the video.</small>}
+            </FormGroup>
+
+            {!isVideo && (
+              <FormGroup>
+                <Label>Image <span className="text-danger">*</span></Label>
+                <div className="news-upload">
+                  {preview ? (
+                    <img src={preview} alt="preview" style={{ maxWidth: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 8 }} />
+                  ) : (
+                    <div className="text-muted"><FaRegNewspaper size={26} className="mb-2" style={{ opacity: 0.5 }} /><div>No image selected</div></div>
+                  )}
+                  <div className="mt-3">
+                    <Input type="file" accept="image/*" onChange={handleImage} />
+                    <small className="text-muted">{preview ? 'Choose a file to replace the current image.' : 'A cover image is required for articles.'}</small>
                   </div>
-                </FormGroup>
-              </>
+                </div>
+              </FormGroup>
             )}
           </Form>
         </ModalBody>
@@ -336,11 +338,19 @@ const News = () => {
                 </p>
               )}
               {viewItem.type === 'video' ? (
-                viewItem.videoUrl && (
-                  <a href={viewItem.videoUrl} target="_blank" rel="noopener noreferrer" className="d-inline-flex align-items-center" style={{ gap: 6 }}>
-                    <FaPlay size={12} /> Open video link
-                  </a>
-                )
+                <>
+                  {viewItem.videoUrl && (
+                    <a href={viewItem.videoUrl} target="_blank" rel="noopener noreferrer" className="d-inline-flex align-items-center" style={{ gap: 6 }}>
+                      <FaPlay size={12} /> Open video link
+                    </a>
+                  )}
+                  {stripHtml(viewItem.content) && (
+                    <>
+                      <hr style={{ marginBottom: 18 }} />
+                      <div className="news-content" dangerouslySetInnerHTML={{ __html: viewItem.content || '' }} />
+                    </>
+                  )}
+                </>
               ) : (
                 <>
                   <hr style={{ marginBottom: 18 }} />

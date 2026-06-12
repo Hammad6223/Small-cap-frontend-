@@ -12,11 +12,10 @@ const buildFormData = (data) => {
   const type = data.type || 'article';
   formData.append('title', data.title);
   formData.append('type', type);
+  formData.append('content', data.content || '');
   if (type === 'video') {
     formData.append('videoUrl', data.videoUrl || '');
-    formData.append('content', '');
   } else {
-    formData.append('content', data.content || '');
     formData.append('videoUrl', '');
     if (data.image) formData.append('image', data.image);
   }
